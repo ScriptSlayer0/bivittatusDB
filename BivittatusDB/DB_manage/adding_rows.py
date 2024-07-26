@@ -10,9 +10,9 @@ def add_names_to_db():
 
     #create a new table 
     tb1=test_db.New_table("table1", #name "table1"
-                           ("id", "name"), #columns are called "id" and "name"
-                           (int(), str()), #id holds int, and name holds str
-                           "id") #id will be the primary key
+                        ("id", "name"), #columns are called "id" and "name"
+                        (int(), str()), #id holds int, and name holds str
+                        "id") #id will be the primary key
 
     #add rows to the table
     i = 1
@@ -25,6 +25,3 @@ def add_names_to_db():
 
     bdb.save(tb1)
     print(tb1)
-
-# Call the function
-add_names_to_db()
