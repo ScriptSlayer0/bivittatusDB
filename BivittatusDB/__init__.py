@@ -5,3 +5,4 @@ print(script_dir)
 sys.path.append(script_dir)
 
 from .BivittatusDB import *
+from .DB_manage import *
