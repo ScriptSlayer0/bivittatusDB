@@ -2,7 +2,7 @@ import metaclass
 try: 
     from Crypto.PublicKey import RSA
     from Crypto.Cipher import PKCS1_OAEP, AES
-    from Crypto.Random import get_random_bytes
+    from Crypto.Random import get_random_bytes, new
     from Crypto.Util.Padding import pad, unpad
 except:
     raise metaclass.BDBException.ImportError(f"Could not import needed files in {__file__}")
