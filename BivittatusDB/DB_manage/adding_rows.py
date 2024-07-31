@@ -1,35 +1,35 @@
+#Be carefull manipulating this module works good for this example of table
 import BivittatusDB as bdb
 
 def add_names_to_db():
-    # Initialize the database
-    test_db = bdb.database("test").init()
+    #drop pre-existing databases (for best practices and to avoid errors)
+    try: bdb.drop("test")
+    except: pass
 
-    # Create a new table 
-    tb1 = test_db.New_table(
-        "table1",            # Table name
-        ("id", "name"),      # Column names
-        (int(), str()),      # Column types
-        "id"                 # Primary key
-    )
+    #initialise the database
+    test_db=bdb.database("test").init()
 
-    # Start primary key index
-    i = 1
+    #create a new table 
+    tb1=test_db.New_table("table1", #name "table1")
+                        ("id", "name"), #columns are named "id" and "name".
+                        (int(), str()), #id contains int, and name contains str
+                        "id") #id will be the #primary key
 
-    # Add rows to the table
+    #initialize id4
+    id = 1
+
     while True:
-        name = input("Enter a name (or 'exit' to finish): ")
+        #ask for a name
+        name = input("Enter a name to add to the table (or 'exit' to end): ")
+        
+        #break loop if user wants to quit
         if name.lower() == 'exit':
             break
-        
-        # Check if the primary key already exists
-        if tb1.primary_key_exists(i):
-            print(f"Primary key {i} already exists. Skipping entry.")
-        else:
-            tb1.add((i, name))
-            print(f"Added ({i}, {name})")
-            i += 1
 
-    # Save the table to the database
-    test_db.save(tb1)  # Save using the database instance, not bdb directly
-    print("Table saved.")
+        #add row to table
+        tb1+(id, name)
+        
+        #increment id
+        id += 1
     print(tb1)
+    bdb.save(tb1)
