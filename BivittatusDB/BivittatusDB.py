@@ -1,3 +1,4 @@
+import os
 import metaclass
 try: 
     from bdb_aggregate import *
@@ -7,9 +8,9 @@ except:
     raise metaclass.BDBException.ImportError(f"Could not import needed files in {__file__}")
 
 class database:
-    def __init__(self, database_name:str, Encrpyt:bool=False):
-        self.database_name=database_name
-        self.db=Handler(database_name, Encrpyt)
+    def __init__(self, database_name:str, Encrypt:bool=False):
+        self.database_name = database_name
+        self.db = Handler(database_name, Encrypt)
 
     def init(self):
         self.db.init().use()
@@ -31,10 +32,16 @@ class database:
         if primary not in columns:
             while primary != None:
                 raise NameError(f"Can't make unknown column {primary} into a primary key")
-        metadata=[("Data", "Type")]
+        metadata = [("Data", "Type")]
         for column, value in zip(columns, data_types):
             metadata.append((column, value))
         metadata.append(("Primary Key", f"{primary}"))
         metadata.append(("Foreign Key", f"{foreign}"))
-        self.db.CreateTable(name, [columns], metadata)
-        return self.load_table(name)
+        
+        # Check if the table already exists
+        if self.db.TableExists(name):
+            print(f"Table {name} already exists. Appending data.")
+            return self.load_table(name)
+        else:
+            self.db.CreateTable(name, [columns], metadata)
+            return self.load_table(name)
