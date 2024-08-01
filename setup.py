@@ -6,7 +6,7 @@ with open("README.md", "r") as fh:
 
 setup(
     name="bivittatusDB",
-    version="1.0.0.0",  # Update with the appropriate version
+    version="1.0.0.1",  # Update with the appropriate version
     author="HarbingerOfFire",
     author_email="harbingeroffire@proton.me",  # Replace with the author's email
     description="Operator Based Relational Database Management system for python",
@@ -14,6 +14,10 @@ setup(
     long_description_content_type="text/markdown",
     url="https://github.com/HarbingerOfFire/bivittatusDB",
     packages=find_packages(),
+    package_data={
+        'BivittatusDB':['./*.so']
+    },
+    include_package_data=True,
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
