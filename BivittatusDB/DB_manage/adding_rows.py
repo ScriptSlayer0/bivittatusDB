@@ -3,10 +3,10 @@ import BivittatusDB as bdb
 
 def add_names_to_db():
     # Drop pre-existing database (for best practices and to avoid errors) / It can work now without doing drop
-    try:
-        bdb.drop("test")
-    except Exception as e:
-        print(f"An error occurred while dropping the database: {e}")
+    # try:
+    #     bdb.drop("test")
+    # except Exception as e:
+    #     print(f"An error occurred while dropping the database: {e}")
 
     # Initialize the database
     test_db = bdb.database("test").init()
