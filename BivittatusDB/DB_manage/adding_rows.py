@@ -1,35 +1,52 @@
-#Be carefull manipulating this module works good for this example of table
+# Be careful manipulating this module; it works well for this example of a table.
 import BivittatusDB as bdb
 
 def add_names_to_db():
-    #drop pre-existing databases (for best practices and to avoid errors)
-    try: bdb.drop("test")
-    except: pass
+    # Drop pre-existing database (for best practices and to avoid errors) / It can work now without doing drop
+    try:
+        bdb.drop("test")
+    except Exception as e:
+        print(f"An error occurred while dropping the database: {e}")
 
-    #initialise the database
-    test_db=bdb.database("test").init()
+    # Initialize the database
+    test_db = bdb.database("test").init()
 
-    #create a new table 
-    tb1=test_db.New_table("table1", #name "table1")
-                        ("id", "name"), #columns are named "id" and "name".
-                        (int(), str()), #id contains int, and name contains str
-                        "id") #id will be the #primary key
+    # Create a new table
+    tb1 = test_db.New_table(
+        "table1",  # Name of the table
+        ("id", "name"),  # Columns are named "id" and "name"
+        (int(), str()),  # id contains int, and name contains str
+        "id"  # id will be the primary key
+    )
 
-    #initialize id4
+    # Initialize id
     id = 1
 
     while True:
-        #ask for a name
+        # Ask for a name
         name = input("Enter a name to add to the table (or 'exit' to end): ")
-        
-        #break loop if user wants to quit
+
+        # Break loop if user wants to quit
         if name.lower() == 'exit':
             break
 
-        #add row to table
-        tb1+(id, name)
+        # Add row to table
+        tb1 + (id, name)
         
-        #increment id
+        # Increment id
         id += 1
+
+    print("The result of the table:")
     print(tb1)
-    bdb.save(tb1)
+
+    while True:
+        answer = input("Do you want to save this table? (y/n): ").strip().lower()
+        if answer == "y":
+            bdb.save(tb1)  # Save the table using bdb.save function
+            print("Table saved successfully.")
+            break  # Exit the loop after saving the table
+        elif answer == "n":
+            print("You chose not to save this table.")
+            break  # Exit the loop after deciding not to save the table
+        else:
+            print("Choose a correct option (y/n).")
