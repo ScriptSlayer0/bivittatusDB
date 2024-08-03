@@ -24,7 +24,7 @@ print(tb1)
 
 #example updates
 #Set the name "Cindy" to "Chloe"
-tb1[1] = ("Chloe", tb1["name"]=="Cindy")
+tb1[1] = ("Chloe", tb1["name"]=="C")
 
 print(tb1)
 

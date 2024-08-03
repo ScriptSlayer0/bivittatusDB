@@ -2,6 +2,7 @@ from DB_manage.adding_rows import add_names_to_db
 from DB_manage.table_view import use_table
 from DB_manage.table_view import *
 from utils.clean_screan import cleaning_screan
+from DB_manage.update_table import update_tb
 import time
 
 def main_menu():
@@ -11,7 +12,8 @@ def main_menu():
         print("Option 1: Use table",
               "\nOption 2: Insert values in table",
               "\nOption 3: Delete values in the table",
-              "\nOption 4: Exit")
+              "\nOption 4: Update values in the table",
+              "\nOption 5: Exit")
         option = input("Please enter an option: ")
         if option == "1":
             try:
@@ -30,6 +32,10 @@ def main_menu():
             cleaning_screan()
 
         elif option == "4":
+            time.sleep(0.4)
+            update_tb()
+
+        elif option == "5":
             print("exiting....")
             time.sleep(0.4)
             cleaning_screan()
