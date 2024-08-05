@@ -71,24 +71,40 @@ class _CHANDLE:
 class KeyManager:
     def __init__(self, database_name):
         self.database = database_name
+        self.private_key_path = os.path.join(f"./{self.database}", "private.pem")
+        self.public_key_path = os.path.join(f"./{self.database}", "public.pem")
+        self.private_key = None
+        self.public_key = None
+
+        # Load keys if they already exist
+        if os.path.exists(self.private_key_path) and os.path.exists(self.public_key_path):
+            self.keyload()
 
     def keygen(self):
-        """Generate RSA keys and store them in the database directory."""
+        """Generate RSA keys and store them in the database directory if they do not exist."""
+        if os.path.exists(self.private_key_path) and os.path.exists(self.public_key_path):
+            print("Keys already exist. Skipping key generation.")
+            return
+
         key = RSA.generate(4096)
         private_key = key.export_key()
         public_key = key.publickey().export_key()
-        db_path = f"./{self.database}"
-        os.makedirs(db_path, exist_ok=True)
-        with open(os.path.join(db_path, "public.pem"), "wb") as f:
+        os.makedirs(os.path.dirname(self.private_key_path), exist_ok=True)
+        
+        with open(self.public_key_path, "wb") as f:
             f.write(public_key)
-        with open(os.path.join(db_path, "private.pem"), "wb") as f:
+        with open(self.private_key_path, "wb") as f:
             f.write(private_key)
+        print("Keys generated and saved.")
 
     def keyload(self):
         """Load RSA keys from the database directory."""
-        with open(os.path.join(f"./{self.database}", "private.pem"), "rb") as f:
+        if not os.path.exists(self.private_key_path) or not os.path.exists(self.public_key_path):
+            raise FileNotFoundError("Key files do not exist. Please generate keys first.")
+        
+        with open(self.private_key_path, "rb") as f:
             self.private_key = RSA.import_key(f.read())
-        with open(os.path.join(f"./{self.database}", "public.pem"), "rb") as f:
+        with open(self.public_key_path, "rb") as f:
             self.public_key = RSA.import_key(f.read())
 
     @staticmethod
@@ -105,32 +121,41 @@ class KeyManager:
 
     def secure(self, password):
         """Encrypt the private key with a password."""
+        if not self.private_key:
+            raise RuntimeError("Private key not loaded. Cannot encrypt.")
+
         try:
-            with open(os.path.join(f"./{self.database}", "private.pem"), "rb") as f:
+            with open(self.private_key_path, "rb") as f:
                 key = f.read()
             key = self.pad(key, 256)
             password = self.pad(password.encode(), 32)
             iv = get_random_bytes(16)
             cipher = AES.new(password, AES.MODE_CBC, iv)
             ciphertext = hexlify(iv + cipher.encrypt(key))
-            with open(os.path.join(f"./{self.database}", "private.pem"), "wb") as f:
+            with open(self.private_key_path, "wb") as f:
                 f.write(ciphertext)
+            print("Private key encrypted.")
         except Exception as e:
-            raise metaclass.BDBException.EncryptionError(f"Problem encrypting data: {e}")
+            raise RuntimeError(f"Problem encrypting data: {e}")
 
     def remove_secure(self, password):
         """Decrypt the private key with a password."""
+        if not os.path.exists(self.private_key_path):
+            raise FileNotFoundError("Encrypted private key file does not exist.")
+        
         try:
-            with open(os.path.join(f"./{self.database}", "private.pem"), "rb") as f:
+            with open(self.private_key_path, "rb") as f:
                 key = unhexlify(f.read())
             password = self.pad(password.encode(), 32)
             iv = key[:AES.block_size]
             cipher = AES.new(password, AES.MODE_CBC, iv)
             decrypted_key = self.unpad(cipher.decrypt(key[AES.block_size:]))
-            with open(os.path.join(f"./{self.database}", "private.pem"), "wb") as f:
+            with open(self.private_key_path, "wb") as f:
                 f.write(decrypted_key)
+            self.private_key = RSA.import_key(decrypted_key)
+            print("Private key decrypted and loaded.")
         except Exception as e:
-            raise metaclass.BDBException.EncryptionError(f"Problem decrypting data: {e}")
+            raise RuntimeError(f"Problem decrypting data: {e}")
 
 # Main Handler class
 class Handler:
