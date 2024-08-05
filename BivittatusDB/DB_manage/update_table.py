@@ -1,25 +1,44 @@
+import os
 import BivittatusDB as bdb
+from utils.clean_screan import cleaning_screan
 
 # Initialize the database
 def update_tb():
-    test_db = bdb.database("test").init()
-    tb1 = test_db.load_table("table1")
+    try:
+        cleaning_screan()  # Assuming this function exists to clear the screen
+        current_db = input("Enter the database you are going to use: ")
+        
+        # Check if the database directory exists
+        if os.path.isdir(current_db):
+            update_db = bdb.database(current_db).init()
+            
+            current_tb = input("Enter the table you are going to use: ")
+            tb = update_db.load_table(current_tb)
+        else:
+            print(f"Error: The database directory '{current_db}' does not exist.")
+            return
 
-    def get_valid_input(prompt, valid_options=None, convert_func=None):
-        while True:
-            user_input = input(prompt).strip()
-            if user_input.lower() == 'exit':
-                return 'exit'
-            if valid_options and user_input not in valid_options:
-                print(f"Invalid input. Please enter one of the following: {', '.join(valid_options)}")
-                continue
-            if convert_func:
-                try:
-                    user_input = convert_func(user_input)
-                except ValueError:
-                    print(f"Invalid input. Please enter a valid {convert_func.__name__}.")
+        def get_valid_input(prompt, valid_options=None, convert_func=None):
+            while True:
+                cleaning_screan()
+                print(tb)
+
+                user_input = input(prompt).strip()
+                if user_input.lower() == 'exit':
+                    return 'exit'
+                if valid_options and user_input not in valid_options:
+                    print(f"Invalid input. Please enter one of the following: {', '.join(valid_options)}")
                     continue
-            return user_input
+                if convert_func:
+                    try:
+                        user_input = convert_func(user_input)
+                    except ValueError:
+                        print(f"Invalid input. Please enter a valid {convert_func.__name__}.")
+                        continue
+                return user_input
+
+    except Exception as e:
+        print(f"An error occurred: {str(e)}")
 
     # Loop to allow user to update data or exit
     while True:
@@ -36,15 +55,15 @@ def update_tb():
             break
 
         # Update the table based on user input
-        tb1["name"] = (new_name, tb1["id"] == id_to_update)
-
+        tb["name"] = (new_name, tb["id"] == id_to_update)
+        cleaning_screan()
         print("Updated table:")
-        print(tb1)
+        print(tb)
 
         while True:
             answer = input("Do you want to save this table? (y/n): ").strip().lower()
             if answer == "y":
-                bdb.save(tb1)  # Save the table using bdb.save function
+                bdb.save(tb)  # Save the table using bdb.save function
                 print("Table saved successfully.")
                 break  # Exit the loop after saving the table
             elif answer == "n":

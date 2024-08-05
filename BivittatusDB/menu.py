@@ -7,40 +7,44 @@ import time
 
 def main_menu():
     cleaning_screan()
-    while True:
-        print("What do you want to do?")
-        print("Option 1: Use table",
-              "\nOption 2: Insert values in table",
-              "\nOption 3: Delete values in the table",
-              "\nOption 4: Update values in the table",
-              "\nOption 5: Exit")
-        option = input("Please enter an option: ")
-        if option == "1":
-            try:
+    try:
+        while True:
+            print("What do you want to do?")
+            print("Option 1: Use table",
+                  "\nOption 2: Insert values in table",
+                  "\nOption 3: Delete values in the table",
+                  "\nOption 4: Update values in the table",
+                  "\nOption 5: Exit")
+            option = input("Please enter an option: ")
+            if option == "1":
+                try:
+                    cleaning_screan()
+                    use_table()
+                except Exception as e:
+                    print("Exception:", e)
+
+            elif option == "2":
                 cleaning_screan()
-                use_table()
-            except Exception as e:
-                print("Exception:",e)
+                add_names_to_db()
 
-        elif option == "2":
-            cleaning_screan()
-            add_names_to_db()
-            
-        elif option == "3":
-            print("This option is not yet implemented.")
-            time.sleep(1)
-            cleaning_screan()
+            elif option == "3":
+                print("This option is not yet implemented.")
+                time.sleep(1)
+                cleaning_screan()
 
-        elif option == "4":
-            time.sleep(0.4)
-            update_tb()
+            elif option == "4":
+                time.sleep(0.4)
+                update_tb()
 
-        elif option == "5":
-            print("exiting....")
-            time.sleep(0.4)
-            cleaning_screan()
-            break
+            elif option == "5":
+                print("Exiting....")
+                time.sleep(0.4)
+                cleaning_screan()
+                break
 
-        else:
-            print("Incorrect option")
+            else:
+                print("Incorrect option")
+    except KeyboardInterrupt:
+        print("\nKeyboardInterrupt detected. Exiting...")
+        
 main_menu()
