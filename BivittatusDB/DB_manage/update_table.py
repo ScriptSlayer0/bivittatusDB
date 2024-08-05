@@ -1,88 +1,54 @@
 import BivittatusDB as bdb
-#WIP
+
+# Initialize the database
 def update_tb():
-    try:
-        # Inicializa la base de datos
-        test_db = bdb.database("test").init()
-        print("Base de datos inicializada:", test_db)
+    test_db = bdb.database("test").init()
+    tb1 = test_db.load_table("table1")
 
-        # Intentar cargar la tabla
-        try:
-            tb1 = test_db.load_table("table1")  # Usa load_table para obtener la tabla
-            print("Tabla cargada correctamente.")
-        except Exception as e:
-            print(f"Error al cargar la tabla: {e}")
-            return
+    def get_valid_input(prompt, valid_options=None, convert_func=None):
+        while True:
+            user_input = input(prompt).strip()
+            if user_input.lower() == 'exit':
+                return 'exit'
+            if valid_options and user_input not in valid_options:
+                print(f"Invalid input. Please enter one of the following: {', '.join(valid_options)}")
+                continue
+            if convert_func:
+                try:
+                    user_input = convert_func(user_input)
+                except ValueError:
+                    print(f"Invalid input. Please enter a valid {convert_func.__name__}.")
+                    continue
+            return user_input
 
-        # Imprimir el contenido actual de tb1
-        print("Contenido actual de tb1:")
-        print(tb1)
-
-        # Actualizar el nombre "Cindy" a "Chloe" solo si el nombre actual es "Cindy"
-        try:
-            for row_id in tb1.keys():  # Itera sobre todos los ids en la tabla
-                if tb1[row_id]["name"] == "Cindy":
-                    tb1[row_id] = ("Chloe",)  # Actualiza solo el nombre, preservando el ID
-            print("Después de actualizar 'Cindy' a 'Chloe':")
-        except Exception as e:
-            print(f"Error al actualizar 'Cindy' a 'Chloe': {e}")
+    # Loop to allow user to update data or exit
+    while True:
+        id_to_update = get_valid_input("Enter the id of the row you want to update or type 'exit' to stop: ", convert_func=int)
         
-        print(tb1)
+        if id_to_update == 'exit':
+            print("Exiting data entry.")
+            break
 
-        # Establecer todos los nombres a "new_name"
-        try:
-            for row_id in tb1.keys():  # Itera sobre todos los ids en la tabla
-                tb1[row_id] = ("new_name",)  # Actualiza solo el nombre, preservando el ID
-            print("Después de actualizar todos los nombres a 'new_name':")
-        except Exception as e:
-            print(f"Error al actualizar todos los nombres a 'new_name': {e}")
+        new_name = get_valid_input("Enter the new name: ")
         
+        if new_name == 'exit':
+            print("Exiting data entry.")
+            break
+
+        # Update the table based on user input
+        tb1["name"] = (new_name, tb1["id"] == id_to_update)
+
+        print("Updated table:")
         print(tb1)
 
-        # Función para actualizar el nombre y guardar cambios opcionalmente
-        def update_name():
-            print("Datos actuales en la tabla:")
-            print(tb1)
-
-            # Obtener el ID de la fila a actualizar
-            try:
-                id_to_update = int(input("Introduce el ID de la fila que deseas actualizar: "))
-            except ValueError:
-                print("Formato de ID inválido.")
-                return
-
-            # Obtener el nuevo nombre del usuario
-            new_name = input("Introduce el nuevo nombre: ")
-
-            # Actualizar el nombre en la tabla
-            try:
-                if id_to_update in tb1:
-                    # Verificar el nombre actual antes de actualizar
-                    current_name = tb1[id_to_update]["name"]
-                    if current_name:  # Solo actualiza si el nombre actual existe
-                        tb1[id_to_update] = (new_name,)
-                        print("Tabla actualizada:")
-                        print(tb1)
-                    else:
-                        print("No se puede actualizar, nombre actual no encontrado.")
-                else:
-                    print("ID no encontrado en la tabla.")
-            except Exception as e:
-                print(f"Error al actualizar el nombre: {e}")
-
-            # Preguntar al usuario si desea guardar los cambios
-            try:
-                save = input("¿Deseas guardar los cambios? (sí/no): ").strip().lower()
-                if save == 'sí':
-                    test_db.save(tb1)  # Guardar cambios en la base de datos
-                    print("Los cambios han sido guardados.")
-                else:
-                    print("Los cambios no han sido guardados.")
-            except Exception as e:
-                print(f"Error al guardar: {e}")
-
-        # Llamar a la función de actualización si es necesario
-        update_name()
-
-    except Exception as e:
-        print(f"Error en la actualización de la tabla: {e}")
+        while True:
+            answer = input("Do you want to save this table? (y/n): ").strip().lower()
+            if answer == "y":
+                bdb.save(tb1)  # Save the table using bdb.save function
+                print("Table saved successfully.")
+                break  # Exit the loop after saving the table
+            elif answer == "n":
+                print("You chose not to save this table.")
+                break  # Exit the loop after deciding not to save the table
+            else:
+                print("Choose a correct option (y/n).")
