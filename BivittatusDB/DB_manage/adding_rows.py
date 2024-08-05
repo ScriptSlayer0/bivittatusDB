@@ -1,13 +1,9 @@
 # Be careful manipulating this module; it works well for this example of a table.
+import time
 import BivittatusDB as bdb
+from utils.clean_screan import cleaning_screan
 
 def add_names_to_db():
-    # Drop pre-existing database (for best practices and to avoid errors) / It can work now without doing drop
-    # try:
-    #     bdb.drop("test")
-    # except Exception as e:
-    #     print(f"An error occurred while dropping the database: {e}")
-
     # Initialize the database
     test_db = bdb.database("test").init()
 
@@ -44,6 +40,7 @@ def add_names_to_db():
         if answer == "y":
             bdb.save(tb1)  # Save the table using bdb.save function
             print("Table saved successfully.")
+            time.sleep(0.8)
             break  # Exit the loop after saving the table
         elif answer == "n":
             print("You chose not to save this table.")

@@ -1,13 +1,13 @@
 import metaclass
 try:     
     import datetime, BDB_metadata
-    from BDB_io import Handler
+    from encrypt import KeyManager
     from metaclass import *
 except:
     raise metaclass.BDBException.ImportError(f"Could not import needed files in {__file__}")
 
 class table(metaclass=TableMeta):
-    def __init__(self, handler:Handler, database, table_name, temp:bool=False, temp_data:list=None) -> None:
+    def __init__(self, handler:KeyManager, database, table_name, temp:bool=False, temp_data:list=None) -> None:
         self.io=handler
         self.autocommit=False
         self.database=database

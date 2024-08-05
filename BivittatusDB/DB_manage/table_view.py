@@ -1,3 +1,4 @@
+import time
 import BivittatusDB as bdb
 import os
 
@@ -41,9 +42,11 @@ def use_table():
     table_name = input("Enter the name of the table you want to use: ")
 
     try:
+        #By the moment works like this:
         tb1 = db.load_table(table_name)
         print("The current table:")
         print(tb1)
+        time.sleep(3)
     except Exception as e:
         print(f"Error loading the table: {e}")
 

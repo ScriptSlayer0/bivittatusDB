@@ -6,9 +6,9 @@ from DB_manage.update_table import update_tb
 import time
 
 def main_menu():
-    cleaning_screan()
     try:
         while True:
+            cleaning_screan()
             print("What do you want to do?")
             print("Option 1: Use table",
                   "\nOption 2: Insert values in table",
@@ -46,5 +46,7 @@ def main_menu():
                 print("Incorrect option")
     except KeyboardInterrupt:
         print("\nKeyboardInterrupt detected. Exiting...")
+        time.sleep(1.3)
+        cleaning_screan()
         
 main_menu()
