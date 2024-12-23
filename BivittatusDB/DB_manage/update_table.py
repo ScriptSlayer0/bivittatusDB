@@ -1,3 +1,4 @@
+import traceback
 import BivittatusDB as bdb
 from DB_manage.funtions.common.list_dir_pydb import list_pydb
 from DB_manage.funtions.common.saving import save_table
@@ -30,13 +31,16 @@ def initialize_table(db_name, table_name):
         return table
     except Exception as e:
         print(f"Error loading table: {e}")
+        traceback.print_exc()
         return None
 
 def update_table(table):
     while True:
         pause_and_clean(0)
+        print("Current table:")
         print(table)
-        id_to_update = get_input("Enter the id of the row you want to update or type 'exit' to stop: ", convert_func=int)
+
+        id_to_update = get_input("Enter the ID of the row you want to update or type 'exit' to stop: ", convert_func=int)
         if id_to_update == 'exit':
             print("Exiting data entry.")
             break
@@ -47,14 +51,27 @@ def update_table(table):
             break
 
         try:
-            table["name"] = (new_name, table["id"] == id_to_update)
-            pause_and_clean(0)
-            print("Updated table:")
-            print(table)
-            pause_and_clean(1.2)
+            updated = False
+            # Assuming table is a list of lists, where row[0] is id and row[1] is name
+            for row in table:
+                if row[0] == id_to_update:  # Assuming id is at index 0
+                    row[1] = new_name  # Assuming name is at index 1
+                    updated = True
+                    break
+
+            if updated:
+                pause_and_clean(0)
+                print("Updated table:")
+                print(table)
+                pause_and_clean(1.2)
+            else:
+                print(f"No row found with ID {id_to_update}.")
         except Exception as e:
             print(f"Error updating table: {e}")
-            pause_and_clean(0.8)
+            traceback.print_exc()
+            pause_and_clean(1)
+
+
 
 def update_tb():
     try:
@@ -97,6 +114,7 @@ def update_tb():
             return
     except Exception as e:
         print(f"General error: {e}")
+        traceback.print_exc()
         delay(2)
 
 if __name__ == "__main__":
